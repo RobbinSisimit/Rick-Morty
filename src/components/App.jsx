@@ -3,18 +3,29 @@ export const App = () =>{
     const [name, setName] = useState('');
     const [characters, setCharacters] = useState([]);
     const [error, setError] = useState(null);
+    const [speciesFilter, setSpeciesFilter] = useState('');
+    const [speciesList, setSpeciesList] = useState([]);
     const fetch2 = () => {
-        fetch(`https://rickandmortyapi.com/api/character/?name=${name}`)
-            .then((response) => response.json())
-            .then((data) => {
-                setCharacters(data.results || []); // `results` contiene el array de personajes
-                
+        let url = `https://rickandmortyapi.com/api/character/?name=${name}`;
+        if (speciesFilter) {
+            url += `&species=${speciesFilter}`;
+        }
+
+        fetch(url)
+            .then(response => response.json())
+            .then(data => {
+                setCharacters(data.results || []);
+                // Extraer especies únicas
+                const uniqueSpecies = [...new Set(data.results.map(character => character.species))];
+                setSpeciesList(uniqueSpecies);
             })
-            .catch((error) => {
-                console.error('Error al obtener datos', error);
-                setError('Error al obtener datos');
-            })
+            .catch(() => setError('Error al obtener datos'));
     }
+
+    const handleSearch = () => {
+        fetchCharacters();
+    };
+
     return(
         <>
             <h1>buscar</h1>
@@ -26,6 +37,19 @@ export const App = () =>{
             />
             <button onClick={fetch2}>:D</button>
 
+            <div>
+                <label htmlFor="speciesFilter">Filtrar por especie:</label>
+                <select
+                    id="speciesFilter"
+                    value={speciesFilter}
+                    onChange={(e) => setSpeciesFilter(e.target.value)}
+                >
+                    <option value="">Todas</option>
+                    {speciesList.map((species, index) => (
+                        <option key={index} value={species}>{species}</option>
+                    ))}
+                </select>
+            </div>
             
 
             {characters.length > 0 ? (
@@ -43,6 +67,3 @@ export const App = () =>{
         </>
     )
 }
-
-
-
