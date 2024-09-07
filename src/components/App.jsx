@@ -1,12 +1,14 @@
-import React, { useState } from "react";
-export const App = () =>{
+import { useState } from "react";
+import './App.css'; 
+
+export const App = () => {
     const [name, setName] = useState('');
     const [characters, setCharacters] = useState([]);
-    const [error, setError] = useState(null);
     const [speciesFilter, setSpeciesFilter] = useState('');
     const [speciesList, setSpeciesList] = useState([]);
+
     const fetch2 = () => {
-        let url = `https://rickandmortyapi.com/api/character/?name=${name}`;
+        let url = `https://rickandmortyapi.com/api/character/?name=${name}`
         if (speciesFilter) {
             url += `&species=${speciesFilter}`;
         }
@@ -14,33 +16,26 @@ export const App = () =>{
         fetch(url)
             .then(response => response.json())
             .then(data => {
-                setCharacters(data.results || []);
-                // Extraer especies únicas
-                const uniqueSpecies = [...new Set(data.results.map(character => character.species))];
+                setCharacters(data.results || [])
+                const uniqueSpecies = [...new Set(data.results.map(character => character.species))]
                 setSpeciesList(uniqueSpecies);
             })
-            .catch(() => setError('Error al obtener datos'));
+            .catch(() => alert('Error al obtener datos'))
     }
 
-    const handleSearch = () => {
-        fetchCharacters();
-    };
-
-    return(
+    return (
         <>
-            <h1>buscar</h1>
+            <h1>Buscar Personajes</h1>
             <input
-                className="form-control me-2"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
             />
-            <button onClick={fetch2}>:D</button>
+            <button onClick={fetch2}>Buscar</button>
 
             <div>
-                <label htmlFor="speciesFilter">Filtrar por especie:</label>
+                <label>Filtrar por especie:</label>
                 <select
-                    id="speciesFilter"
                     value={speciesFilter}
                     onChange={(e) => setSpeciesFilter(e.target.value)}
                 >
@@ -50,20 +45,20 @@ export const App = () =>{
                     ))}
                 </select>
             </div>
-            
 
             {characters.length > 0 ? (
-                <ul>
+                <div className="character-grid"> 
                     {characters.map((character) => (
-                        <li key={character.id}>
+                        <div key={character.id} className="character-card">
                             <h2>{character.name}</h2>
                             <img src={character.image} alt={character.name} style={{ width: '100px' }} />
-                        </li>
+                        </div>
                     ))}
-                </ul>
+                </div>
             ) : (
                 <p></p>
             )}
         </>
     )
 }
+
