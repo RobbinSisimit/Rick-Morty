@@ -1,15 +1,15 @@
 import { useState } from "react"
 
-
 export const useCharacters = () => {
     const [name, setName] = useState('')
     const [characters, setCharacters] = useState([])
     const [speciesFilter, setSpeciesFilter] = useState('')
     const [speciesList, setSpeciesList] = useState([])
+    const [currentPage, setCurrentPage] = useState(1)
+    const [info, setInfo] = useState({})
 
-
-    const fetch2 = () => {
-        let url = `https://rickandmortyapi.com/api/character/?name=${name}`
+    const fetchCharacters = (page = 1) => {
+        let url = `https://rickandmortyapi.com/api/character/?name=${name}&page=${page}`
 
         if (speciesFilter) {
             url += `&species=${speciesFilter}`
@@ -21,8 +21,10 @@ export const useCharacters = () => {
                 setCharacters(data.results || [])
                 const uniqueSpecies = [...new Set(data.results.map(character => character.species))]
                 setSpeciesList(uniqueSpecies)
+                setInfo(data.info)
+                setCurrentPage(page)
             })
-            .catch(() => alert('Error  data'))
+            .catch(() => alert('Error data'))
     }
 
     return {
@@ -30,7 +32,10 @@ export const useCharacters = () => {
         speciesList, 
         setName, 
         setSpeciesFilter, 
-        fetch2
+        fetchCharacters, 
+        currentPage, 
+        info,
     }
 }
+
 
